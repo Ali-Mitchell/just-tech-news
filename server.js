@@ -10,14 +10,18 @@ const hbs = exphbs.create({ helpers});
 
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
+// need to study this a little better
 const sess = {
-    secret: 'Super secret secret',
+
+// what exactly is this secret doing and is it calling to another document?
+    secret: 'secret',
     cookie: {},
     resave: false,
     saveUninitialized: true,
     store: new SequelizeStore({
         db: sequelize
-    })
+    }), 
+
 };
 
 const app = express();
