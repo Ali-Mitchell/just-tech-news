@@ -122,6 +122,9 @@ button:hover{
     padding: 20px 0;
 } */
 
+/* 
+------------------------------------------------- */
+
 * {
     box-sizing: border-box;
   }
@@ -130,7 +133,7 @@ button:hover{
     height: 100%;
     padding: 0;
     margin: 0;
-    font-family: sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     color: #273043;
     background-color: white;
   }
@@ -153,7 +156,7 @@ button:hover{
     font-weight: bold;
     transition: background-color .1s;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 12px;
   }
   
   
@@ -170,7 +173,7 @@ button:hover{
   
   textarea:focus, input:focus {
     outline: none;
-    border: 1px solid #3486eb;
+    border: 1px solid #323538;
   }
   
   textarea {
@@ -208,7 +211,7 @@ button:hover{
   }
 
   header h1 a {
-    color: #14591D;
+    color: #242524;
   }
   
   main {
@@ -241,7 +244,7 @@ button:hover{
   }
   
   .upvote-btn {
-    background-color: #197d0f;
+    background-color: #c2c2c2;
     transition: background-color .1s;
   }
   
