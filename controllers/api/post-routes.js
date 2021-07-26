@@ -1,57 +1,17 @@
 const router = require('express').Router();
-const { Post, User, Vote, Comment } = require('../../models');
-const sequelize = require('../../config/connection');
+const { User, Post, Comment } = require('../../models');
 const withAuth = require('../../utils/auth');
 
 
+// Post GET All
 router.get('/', (req, res) => {
     Post.findAll({
-        attributes: [
-        'id',
-        'post_text', 
-        'title', 
-        'created_at', 
-        [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
-    ],
+        attributes: ['id', 'post_text', 'title', 'created_at'],
         order: [['created_at', 'DESC']],
         include: [
             {
                 model: Comment,
-                attributes: ['id', 'comment_text', 'post_id', 'user_id'],
-                include: {
-                    model: User,
-                    attributes: ['username']
-                }
-            },
-            {
-                model: User, 
-                attributes: ['username']
-            }
-        ]
-    })
-        .then(dbPostData => res.json(dbPostData))
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
-});
-
-router.get('/:id', (req, res) => {
-    Post.findOne({
-        where: {
-            id: req.params.id
-        },
-        attributes: [
-            'id', 
-            'post_url', 
-            'title', 
-            'created_at', 
-            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
-        ],
-        include: [
-            {
-                model: Comment,
-                attributes: ['id', 'comment_text', 'post_id', 'user_id'],
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
                 include: {
                     model: User,
                     attributes: ['username']
@@ -63,50 +23,63 @@ router.get('/:id', (req, res) => {
             }
         ]
     })
-        .then(dbPostData => {
-            if (!dbPostData){
-                res.status(404).json({ message: 'No post found with this id' });
-                return;
-            }
-            res.json(dbPostData);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
+    .then(dbPostAll => res.json(dbPostAll))
+    .catch(err => {
+        res.status(500).json({ message: 'Cannot Find Posts'})
+    });
 });
 
+// GET One Post
+router.get('/:id', (req, res) => {
+    Post.findOne({
+        where: { id: req.params.id },
+        attributes: ['id', 'post_text', 'title', 'created_at'],
+        include: [
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
+            {
+                model: User,
+                attributes: ['username']
+            }
+        ]
+    })
+    .then(dbPost => {
+        if(!dbPost) {
+            res.status(404).json({ message: 'Cannot find a post with that id' });
+            return;
+        }
+        res.json(dbPost)
+    })
+    .catch(err => {
+        res.status(500).json({ message: 'Error trying to find that post' });
+    });
+});
+
+// POST a new Post 
 router.post('/', withAuth, (req, res) => {
     Post.create({
         title: req.body.title,
-        post_url: req.body.post_url,
-        user_id: req.session.user_id
+        post_text: req.body.post_text,
+        user_id: req.session.user_id 
     })
-        .then(dbPostData => res.json(dbPostData))
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
+    .then(dbPostCreate => res.json(dbPostCreate))
+    .catch(err => {
+        res.status(500).json({ message: 'Unable To Create A Post' })
+    });
 });
 
-router.put('/upvote', withAuth, (req, res) => {
-    // make sure the session exists first
-    if (req.session) {
-      // pass session id along with all destructured properties on req.body
-      Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
-        .then(updatedVoteData => res.json(updatedVoteData))
-        .catch(err => {
-          console.log(err);
-          res.status(500).json(err);
-        });
-    }
-  });
-
-
+// Update a Post
 router.put('/:id', withAuth, (req, res) => {
     Post.update(
         {
-            title: req.body.title
+            title: req.body.title,
+            post_text: req.body.post_text
         },
         {
             where: {
@@ -114,36 +87,28 @@ router.put('/:id', withAuth, (req, res) => {
             }
         }
     )
-        .then(dbPostData => {
-            if (!dbPostData) {
-                res.status(404).json({ message: 'No post found with this id' });
-                return;
-            }
-            res.json(dbPostData);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
+    .then(dbPostUpdate => {
+        if (!dbPostUpdate) {
+            res.status(404).json({ message: 'Cannot Update the Post' });
+            return;
+        }
+        res.json(dbPostUpdate);
+    })
+    .catch(err => {
+        res.status(500).json({ message: 'Error Updating Post'});
+    });
 });
 
+// DELETE a Post
 router.delete('/:id', withAuth, (req, res) => {
-    Post.destroy({
-        where: {
-            id: req.params.id
-        }
-    })
-        .then(dbPostData => {
-            if(!dbPostData){
-                res.status(404).json({ message: 'No post found with this id' });
-                return;
-            }
-            res.json(dbPostData);
+    Post.destroy(
+        {
+            where: { id: req.params.id }
         })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
+    .then(dbPostDelete => res.json(dbPostDelete))
+    .catch(err => {
+        res.status(500).json({ message: 'Something went wrong deleting the post' });
+    });
 });
 
 module.exports = router;
