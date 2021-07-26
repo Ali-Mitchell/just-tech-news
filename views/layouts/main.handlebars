@@ -54,12 +54,12 @@
                 <a href="/">Tech Talk</a>
             </h1>
             <nav>
-                <a id='home' class='btn btn-primary' href="/" role="home">Home</a>
+                <a id='home' class='btn btn-secondary' href="/" role="home">Home</a>
                 {{#if loggedIn}}
-                <a id='dashboard' class='btn btn-info' href="/dashboard" role="dashboard">Dashboard</a>
+                <a id='dashboard' class='btn btn-secondary' href="/dashboard" role="dashboard">Dashboard</a>
                 <button id="logout" class="btn btn-danger">Log Out</button>
                 {{else}}
-                <a id="login" class="btn btn-info" href="/login" role="login">Login</a>
+                <a id="login" class="btn btn-warning" href="/login" role="login">Login</a>
                 {{/if}}
             </nav>
         </header>
