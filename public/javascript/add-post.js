@@ -1,5 +1,4 @@
-  
-async function newFormHandler(event) {
+async function newPostHandler(event) {
     event.preventDefault();
 
     const title = document.getElementById('post-title').value.trim();
@@ -8,19 +7,19 @@ async function newFormHandler(event) {
     const response = await fetch('api/posts', {
         method: 'POST',
         body: JSON.stringify({
-            title, 
+            title,
             post_text
         }),
         headers: {
             'Content-Type': 'application/json'
         }
     });
-
     if(response.ok) {
         document.location.replace('/dashboard');
     } else {
         console.log(response.statusText);
     }
+
 };
 
-document.querySelector('.new-post').addEventListener('submit', newFormHandler);
+document.querySelector('.new-post').addEventListener('submit', newPostHandler);

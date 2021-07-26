@@ -1,51 +1,51 @@
-async function signupFormHandler(event) {
+async function signUpHandler(event) {
     event.preventDefault();
 
-    const username = document.querySelector('#username-signup').value.trim();
-    const email = document.querySelector('#email-signup').value.trim();
-    const password = document.querySelector('#password-signup').value.trim();
+    const username = document.getElementById('username-signup').value.trim();
+    const email = document.getElementById('email-signup').value.trim();
+    const password = document.getElementById('password-signup').value.trim();
 
     if(username && email && password) {
         const response = await fetch('/api/users', {
             method: 'post',
             body: JSON.stringify({
-                username, 
-                email, 
+                username,
+                email,
                 password
             }),
-            headers: { 'Content-Type': 'application/json'}
-        });
-        if (response.ok){
-            console.log('success');
+            headers: { 'Content-Type': 'application/json' }
+        })
+        if(response.ok) {
+            document.location.replace('/dashboard');
         } else {
-            alert(response.statusText);
+            console.log(response.statusText)
         }
     }
-}
+};
 
-async function loginFormHandler(event){
+async function loginHandler(event) {
     event.preventDefault();
 
-    const email = document.querySelector('#email-login').value.trim();
-    const password = document.querySelector('#password-login').value.trim();
+    const email = document.getElementById('email-login').value.trim();
+    const password = document.getElementById('password-login').value.trim();
 
-    if(email && password){
+    if(email && password) {
         const response = await fetch('/api/users/login', {
             method: 'post',
             body: JSON.stringify({
-                email, 
+                email,
                 password
             }),
-            headers: { 'Content-Type': 'application/json'}
+            headers: { 'Content-Type': 'application/json' }
         });
-
         if(response.ok){
             document.location.replace('/dashboard');
         } else {
+            console.log(response);
             alert(response.statusText);
         }
     }
-}
+};
 
-document.querySelector('.signup-form').addEventListener('submit', signupFormHandler);
-document.querySelector('.login-form').addEventListener('submit', loginFormHandler);
+document.querySelector('.login-form').addEventListener('submit', loginHandler);
+document.querySelector('.signup-form').addEventListener('submit', signUpHandler);
